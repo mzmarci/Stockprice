@@ -19,4 +19,8 @@ This project consists of a **FastAPI** service that fetches stock prices from a 
 
 # The project Architecture
 1. Frontend: Deployed using nginx on an Ec2 server
+2. Application Layer:this is deployed using ecs
+3: Backend Layer: this is deployed using
+
+## Methodology
 a: created modules for ec2,vpc,rds,security,load balancer, auto scaling

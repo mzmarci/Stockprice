@@ -30,6 +30,7 @@ variable "public_subnet_cidrs" {
   description = "Public Subnet CIDR values"
   default = [
     "10.0.1.0/24",
+    "10.0.2.0/24"
   ]
 }
 
@@ -43,7 +44,7 @@ variable "instance_count" {
 variable "target_group_name" {
   description = "The name of the ALB target group"
   type        = string
-  default = "phs-alb-tg"
+  default     = "phs-alb-tg"
 }
 
 variable "target_group_port" {
@@ -123,7 +124,7 @@ variable "health_check_grace_period" {
 variable "instance_tag_name" {
   description = "Tag for instances created by the ASG"
   type        = string
-  default = "phs-app-instance"
+  default     = "phs-app-instance"
 }
 
 # Auto Scaling scaling policies
@@ -148,19 +149,19 @@ variable "scale_cooldown" {
 variable "lb_name" {
   description = "Name of the Load Balancer"
   type        = string
-  default = "phs-algo-alb"
+  default     = "phs-algo-alb"
 }
 
 variable "environment" {
   description = "Deployment environment (dev, staging, prod)"
   type        = string
-  default = "prod"
+  default     = "prod"
 }
 
 variable "name" {
   description = "Name of the ASG"
   type        = string
-  default = "phs-alb"
+  default     = "phs-alb"
 }
 
 variable "db_password" {
@@ -169,5 +170,8 @@ variable "db_password" {
   sensitive   = true
 }
 
-
-
+variable "db_username" {
+  description = "Master username for RDS"
+  type        = string
+  default     = "phsadmin"  # ✅ Valid (starts with a letter, no special characters)
+}

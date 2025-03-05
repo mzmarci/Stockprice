@@ -6,7 +6,11 @@ variable "alb_name" {
 }
 
 
-variable "public_subnets_id" {}
+variable "public_subnets_id" {
+  description = "List of Public Subnet IDs where ALB should be deployed"
+  type        = list(string)
+}
+
 
 # Target group variables
 variable "target_group_name" {
@@ -130,7 +134,7 @@ variable "environment" {
 }
 
 
-variable "lb_security_group_id" {
+variable "alb_security_group_id" {
   description = "Security Group ID for Load Balancer"
   type        = string
 }
@@ -140,7 +144,6 @@ variable "certificate_arn" {
   type        = string
   default     = ""  # Optional if only HTTP is used
 }
-
 variable "name" {
   description = "Name of the ASG"
   type        = string

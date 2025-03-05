@@ -37,20 +37,21 @@ module "load_balancer" {
   instance_type        = var.ec2_instance_type
   environment          = var.environment
   vpc_id               = module.mainvpc.vpc_id
-  public_subnets_id     = module.mainvpc.public_subnets_id
+  public_subnets_id    = module.mainvpc.public_subnets_id
   vpc_zone_identifier  = module.mainvpc.private_subnets_id
   instance_tag_name    = "phs-app-instance"
   security_group_id    = [module.security_group.backend_security_group_id]
-  lb_security_group_id = module.security_group.alb_security_group_id
+  alb_security_group_id = module.security_group.alb_security_group_id
   target_group_name    = "phs-alb-tg"
-  # certificate_arn      = aws_acm_certificate.my_cert.arn
+  //certificate_arn      = "arn:aws:acm:eu-west-1:723855297198:certificate/ed8cd6c8-d566-4a99-8e9e-593128a50a96"
+//aws_acm_certificate.my_cert.arn
 }
 
 module "rds" {
   source                 = "./module/rds"
   db_identifier          = "phs-trading-db"
   db_name                = "marci"
-  db_username            = "stock-rds"
+  db_username            = "phsadmin"
   db_password            = var.db_password
   db_instance_class      = "db.t3.micro"
   allocated_storage      = 20

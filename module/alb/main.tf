@@ -5,9 +5,8 @@ resource "aws_lb" "stock_lb" {
   name               = var.alb_name
   internal           = false  
   load_balancer_type = "application"
-  security_groups    = [var.lb_security_group_id]
+  security_groups    = [var.alb_security_group_id]
   subnets           = var.public_subnets_id
-
   enable_deletion_protection = false
 
   tags = {
@@ -33,6 +32,7 @@ resource "aws_lb_listener" "stock_listener" {
 
 resource "aws_lb_listener" "stock_listener_2" {
   load_balancer_arn = aws_lb.stock_lb.arn
+  count = var.certificate_arn != "" ? 1 : 0  # Only create if cert is provided
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
