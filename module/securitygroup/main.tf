@@ -1,5 +1,5 @@
 locals {
-  ports = [443, 80, 5000, 22, 8080]
+  ports = [443, 80, 8000, 22, 8080]
 }
 
 resource "aws_security_group" "stock_security_group" {
@@ -62,7 +62,7 @@ resource "aws_security_group" "lb_security_group" {
   }
 }
 
-resource "aws_security_group" "web_sg" {
+resource "aws_security_group" "web_sg" {   //frontend layer
   name        = "web_security_group"
   description = "Allow SSH and HTTP Connection"
   vpc_id      = var.vpc_id
@@ -111,28 +111,19 @@ resource "aws_security_group" "middle_sg" {
 resource "aws_security_group_rule" "middle-igress-rule" {
   security_group_id        = aws_security_group.middle_sg.id
   type                     = "ingress"
-  from_port                = 5000
-  to_port                  = 5000
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.web_sg.id
-}
-
-resource "aws_security_group_rule" "middle-igress-rule1" {
-  security_group_id        = aws_security_group.middle_sg.id
-  type                     = "ingress"
   from_port                = 8080
   to_port                  = 8080
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.web_sg.id
 }
 
-resource "aws_security_group_rule" "middle-egress-rule" {
-  security_group_id = aws_security_group.middle_sg.id
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+resource "aws_security_group_rule" "middle-egress-rule" {  //only allow traffic to the backend
+  security_group_id        = aws_security_group.middle_sg.id
+  type                     = "egress"
+  from_port                = 8000  # Redis port
+  to_port                  = 8000
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.backend_sg.id
 
 }
 
@@ -147,18 +138,19 @@ resource "aws_security_group" "backend_sg" {
 resource "aws_security_group_rule" "backend-igress-rule" {
   security_group_id        = aws_security_group.backend_sg.id
   type                     = "ingress"
-  from_port                = 6379 # Redis default port
-  to_port                  = 6379
+  from_port                = 8000 # Redis default port
+  to_port                  = 8000
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.middle_sg.id    # Only allow traffic from Middle Layer
 
 }
+
+// Restricted outbound traffic to only Middle Layer
 resource "aws_security_group_rule" "backend-egress-rule" {
   security_group_id = aws_security_group.backend_sg.id
   type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-
+  from_port         = 8000
+  to_port           = 8000
+  protocol          = "tcp"
+  source_security_group_id = aws_security_group.middle_sg.id
 }

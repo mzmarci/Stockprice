@@ -1,7 +1,7 @@
 # ALB variables
 variable "alb_name" {
   description = "The name of the ALB"
-  default = "skinai-alb"
+  default = "stock-demo"
   type        = string
 }
 
@@ -11,6 +11,10 @@ variable "public_subnets_id" {
   type        = list(string)
 }
 
+variable "private_subnets_id" {
+  description = "List of Public Subnet IDs where ALB should be deployed"
+  type        = list(string)
+}
 
 # Target group variables
 variable "target_group_name" {
@@ -136,7 +140,7 @@ variable "environment" {
 
 variable "alb_security_group_id" {
   description = "Security Group ID for Load Balancer"
-  type        = string
+  type        = list
 }
 
 variable "certificate_arn" {
@@ -147,6 +151,12 @@ variable "certificate_arn" {
 variable "name" {
   description = "Name of the ASG"
   type        = string
+}
+
+variable "nlb_name" {
+  description = "name of the"
+  type = string
+  default = "stock-demo"
 }
 
 variable "vpc_zone_identifier" {

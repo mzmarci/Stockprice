@@ -24,3 +24,12 @@ This project consists of a **FastAPI** service that fetches stock prices from a 
 
 ## Methodology
 a: created modules for ec2,vpc,rds,security,load balancer, auto scaling
+b: for each of the layer a dockerfile was created
+Define ECS tasks and services for each containerized component.
+Use ECS Fargate for serverless container management.
+Configure load balancing, service discovery, and networking.
+Deployment Flow
+
+Jenkins builds and pushes images.
+Terraform applies ECS infrastructure updates.
+ECS Fargate runs and manages the services.

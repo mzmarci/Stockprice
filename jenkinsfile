@@ -1,0 +1,144 @@
+pipeline {
+    agent any
+    environment {
+        AWS_ACCOUNT_ID = "your-account-id"
+        AWS_REGION = "eu-west-1"
+        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    }
+    stages {
+        stage('Build and Push Frontend') {
+            steps {
+                sh """
+                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                docker build -t frontend .
+                docker tag frontend:latest ${ECR_REGISTRY}/frontend:latest
+                docker push ${ECR_REGISTRY}/frontend:latest
+                """
+            }
+        }
+        // Repeat for middle layer and backend
+    }
+}
+
+
+pipeline {
+    agent any
+
+    environment {
+        AWS_ACCOUNT_ID = 'YOUR_AWS_ACCOUNT_ID'
+        AWS_REGION = 'YOUR_AWS_REGION'
+        
+        # Define repository names for each service
+        FRONTEND_REPO_NAME = 'frontends_ecr'
+        MIDDLE_REPO_NAME = 'middle_ecr'
+        BACKEND_REPO_NAME = 'backend_ecr'
+        
+        # Construct ECR URLs
+        FRONTEND_ECR_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${FRONTEND_REPO_NAME}"
+        MIDDLE_ECR_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${MIDDLE_REPO_NAME}"
+        BACKEND_ECR_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${BACKEND_REPO_NAME}"
+        
+        IMAGE_TAG = "latest"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Login to AWS ECR') {
+            steps {
+                script {
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                }
+            }
+        }
+
+        stage('Build and Push Docker Images') {
+            parallel {
+                stage('Build & Push Frontend') {
+                    steps {
+                        script {
+                            sh """
+                            docker build -t ${FRONTEND_REPO_NAME} -f frontend/Dockerfile .
+                            docker tag ${FRONTEND_REPO_NAME}:latest ${FRONTEND_ECR_URL}:${IMAGE_TAG}
+                            docker push ${FRONTEND_ECR_URL}:${IMAGE_TAG}
+                            """
+                        }
+                    }
+                }
+                stage('Build & Push Middle Layer') {
+                    steps {
+                        script {
+                            sh """
+                            docker build -t ${MIDDLE_REPO_NAME} -f middle/Dockerfile .
+                            docker tag ${MIDDLE_REPO_NAME}:latest ${MIDDLE_ECR_URL}:${IMAGE_TAG}
+                            docker push ${MIDDLE_ECR_URL}:${IMAGE_TAG}
+                            """
+                        }
+                    }
+                }
+                stage('Build & Push Backend') {
+                    steps {
+                        script {
+                            sh """
+                            docker build -t ${BACKEND_REPO_NAME} -f backend/Dockerfile .
+                            docker tag ${BACKEND_REPO_NAME}:latest ${BACKEND_ECR_URL}:${IMAGE_TAG}
+                            docker push ${BACKEND_ECR_URL}:${IMAGE_TAG}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Update ECS Services') {
+            parallel {
+                stage('Update Frontend ECS') {
+                    steps {
+                        script {
+                            sh """
+                            aws ecs update-service --cluster YOUR_ECS_CLUSTER_NAME \
+                            --service FRONTEND_SERVICE_NAME \
+                            --force-new-deployment
+                            """
+                        }
+                    }
+                }
+                stage('Update Middle ECS') {
+                    steps {
+                        script {
+                            sh """
+                            aws ecs update-service --cluster YOUR_ECS_CLUSTER_NAME \
+                            --service MIDDLE_SERVICE_NAME \
+                            --force-new-deployment
+                            """
+                        }
+                    }
+                }
+                stage('Update Backend ECS') {
+                    steps {
+                        script {
+                            sh """
+                            aws ecs update-service --cluster YOUR_ECS_CLUSTER_NAME \
+                            --service BACKEND_SERVICE_NAME \
+                            --force-new-deployment
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "All Docker images pushed and ECS services updated successfully!"
+        }
+        failure {
+            echo "Pipeline failed!"
+        }
+    }
+}

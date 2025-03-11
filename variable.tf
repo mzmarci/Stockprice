@@ -173,5 +173,5 @@ variable "db_password" {
 variable "db_username" {
   description = "Master username for RDS"
   type        = string
-  default     = "phsadmin"  # ✅ Valid (starts with a letter, no special characters)
+  default     = "phsadmin" # ✅ Valid (starts with a letter, no special characters)
 }
