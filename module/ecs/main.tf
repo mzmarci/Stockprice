@@ -38,6 +38,8 @@ resource "aws_ecs_task_definition" "frontend_task" {
   memory                   = 512
   cpu                      = 256
   execution_role_arn       = var.ecs_task_execution_role_arn
+  task_role_arn            = var.ecs_task_role_arn
+
 }
 
 resource "aws_ecs_task_definition" "middle_task" {
@@ -65,6 +67,7 @@ resource "aws_ecs_task_definition" "middle_task" {
   memory                   = 1024
   cpu                      = 512
   execution_role_arn       = var.ecs_task_execution_role_arn
+  task_role_arn            = var.ecs_task_role_arn
 }
 
 resource "aws_ecs_task_definition" "backend_task" {
@@ -92,12 +95,13 @@ resource "aws_ecs_task_definition" "backend_task" {
   memory                   = 1024
   cpu                      = 512
   execution_role_arn       = var.ecs_task_execution_role_arn
+  task_role_arn            = var.ecs_task_role_arn
 }
 
 
 # ECS Service for frontend
-resource "aws_ecs_service" "frontend_service" {
-  name            = "frontend-service"
+resource "aws_ecs_service" "frontend_service1" {
+  name            = "frontend-service1"
   cluster         = aws_ecs_cluster.frontend_cluster.id
   task_definition = aws_ecs_task_definition.frontend_task.arn
   launch_type     = "FARGATE"
@@ -125,8 +129,8 @@ resource "aws_ecs_service" "frontend_service" {
 }
 
 # ECS Service for middle layer
-resource "aws_ecs_service" "middle_service" {
-  name            = "midllelayer-service"
+resource "aws_ecs_service" "middle_service1" {
+  name            = "middle-service1"
   cluster         = aws_ecs_cluster.middle_cluster.id
   task_definition = aws_ecs_task_definition.middle_task.arn
   launch_type     = "FARGATE"
@@ -154,8 +158,8 @@ resource "aws_ecs_service" "middle_service" {
 }
 
 # ECS Service for backend
-resource "aws_ecs_service" "backend_service" {
-  name            = "backend-service"
+resource "aws_ecs_service" "backend_service1" {
+  name            = "backend-service1"
   cluster         = aws_ecs_cluster.backend_cluster.id
   task_definition = aws_ecs_task_definition.backend_task.arn
   launch_type     = "FARGATE"

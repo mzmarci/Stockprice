@@ -156,7 +156,7 @@ variable "name" {
 variable "nlb_name" {
   description = "name of the"
   type = string
-  default = "stock-demo"
+  default = "stock-demo1"
 }
 
 variable "vpc_zone_identifier" {

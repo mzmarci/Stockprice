@@ -25,13 +25,13 @@ output "backend_task_definition_arn" {
 }
 
 output "frontend_service_name" {
-  value = aws_ecs_service.frontend_service.name
+  value = aws_ecs_service.frontend_service1.name
 }
 
 output "middle_service_name" {
-  value = aws_ecs_service.middle_service.name
+  value = aws_ecs_service.middle_service1.name
 }
 
 output "backend_service_name" {
-  value = aws_ecs_service.backend_service.name
+  value = aws_ecs_service.backend_service1.name
 }
