@@ -1,15 +1,15 @@
 
 
 output "frontend_cluster_id" {
-  value = aws_ecs_cluster.frontend_cluster.id
+  value = aws_ecs_cluster.stockfrontend_cluster.id
 }
 
 output "middle_cluster_id" {
-  value = aws_ecs_cluster.middle_cluster.id
+  value = aws_ecs_cluster.stockmiddleend_cluster.id
 }
 
 output "backend_cluster_id" {
-  value = aws_ecs_cluster.backend_cluster.id
+  value = aws_ecs_cluster.stockbackend_cluster.id
 }
 
 output "frontend_task_definition_arn" {

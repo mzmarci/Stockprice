@@ -1,16 +1,16 @@
 
 ## Create an ECS Cluster for each layer
 
-resource "aws_ecs_cluster" "frontend_cluster" {
-  name = "frontend_cluster"
+resource "aws_ecs_cluster" "stockfrontend_cluster" {
+  name = "stockfrontend_cluster"
 }
 
-resource "aws_ecs_cluster" "middle_cluster" {
-  name = "middle_cluster"
+resource "aws_ecs_cluster" "stockmiddleend_cluster" {
+  name = "stockmiddleend_cluster"
 }
 
-resource "aws_ecs_cluster" "backend_cluster" {
-  name = "backend_cluster"
+resource "aws_ecs_cluster" "stockbackend_cluster" {
+  name = "stockbackend_cluster"
 }
 
 
@@ -102,12 +102,15 @@ resource "aws_ecs_task_definition" "backend_task" {
 # ECS Service for frontend
 resource "aws_ecs_service" "frontend_service1" {
   name            = "frontend-service1"
-  cluster         = aws_ecs_cluster.frontend_cluster.id
+  cluster         = aws_ecs_cluster.stockfrontend_cluster.id
   task_definition = aws_ecs_task_definition.frontend_task.arn
   launch_type     = "FARGATE"
+  platform_version = "LATEST"
+  scheduling_strategy = "REPLICA"
   desired_count   = var.desired_count
   deployment_minimum_healthy_percent = var.ecs_task_deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.ecs_task_deployment_maximum_percent
+  
 
   network_configuration {
     subnets          = var.subnet_ids 
@@ -131,9 +134,11 @@ resource "aws_ecs_service" "frontend_service1" {
 # ECS Service for middle layer
 resource "aws_ecs_service" "middle_service1" {
   name            = "middle-service1"
-  cluster         = aws_ecs_cluster.middle_cluster.id
+  cluster         = aws_ecs_cluster.stockmiddleend_cluster.id
   task_definition = aws_ecs_task_definition.middle_task.arn
   launch_type     = "FARGATE"
+  platform_version = "LATEST"
+  scheduling_strategy = "REPLICA"
   desired_count   = var.desired_count
   deployment_minimum_healthy_percent = var.ecs_task_deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.ecs_task_deployment_maximum_percent
@@ -160,9 +165,11 @@ resource "aws_ecs_service" "middle_service1" {
 # ECS Service for backend
 resource "aws_ecs_service" "backend_service1" {
   name            = "backend-service1"
-  cluster         = aws_ecs_cluster.backend_cluster.id
+  cluster         = aws_ecs_cluster.stockbackend_cluster.id
   task_definition = aws_ecs_task_definition.backend_task.arn
   launch_type     = "FARGATE"
+  platform_version = "LATEST"
+  scheduling_strategy = "REPLICA"
   desired_count   = var.desired_count
   deployment_minimum_healthy_percent = var.ecs_task_deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.ecs_task_deployment_maximum_percent

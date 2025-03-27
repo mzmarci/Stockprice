@@ -21,6 +21,9 @@ output "backend_target_group_arn" {
   value = aws_lb_target_group.backend_tg.arn
 }
 
+output "ASG_target_group_arn" {
+  value = aws_lb_target_group.asg_tg.arn
+}
 
 output "asg_name" {
   value = aws_autoscaling_group.stock_asg.name
