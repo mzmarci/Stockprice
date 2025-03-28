@@ -178,17 +178,17 @@ variable "instance_type" {
 
 variable "frontend_target_group_arn" {
   description = "List of target group ARNs"
-  type        = list(string)
+  type        = string
 }
 
 variable "backend_target_group_arn" {
   description = "List of target group ARNs"
-  type        = list(string)
+  type        = string
 }
 
 variable "middle_target_group_arn" {
   description = "List of target group ARNs"
-  type        = list(string)
+  type        = string
 }
 variable "security_group_id" {
   description = "Security group IDs for EC2 instances"

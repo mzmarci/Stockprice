@@ -33,9 +33,9 @@ module "load_balancer" {
   lb_name                   = "phs-algo-alb"
   name                      = "phs-alb"
   ami_id                    = var.ec2_ami
-  frontend_target_group_arn = [module.load_balancer.frontend_target_group_arn]
-  middle_target_group_arn   = [module.load_balancer.middle_target_group_arn]
-  backend_target_group_arn  = [module.load_balancer.backend_target_group_arn]
+  frontend_target_group_arn = module.load_balancer.frontend_target_group_arn
+  middle_target_group_arn   = module.load_balancer.middle_target_group_arn
+  backend_target_group_arn  = module.load_balancer.backend_target_group_arn
   instance_type             = var.ec2_instance_type
   environment               = var.environment
   vpc_id                    = module.mainvpc.vpc_id
@@ -77,9 +77,9 @@ module "iam" {
 
 
 module "frontend_ecs" {
-  source                      = "./module/ecs"
+  source                      = "./module/ecs/frontend"
   ecr_repo_urls               = module.ecr.ecr_repo_urls["frontend_ecr"]
-  target_group_arn            = module.load_balancer.frontend_target_group_arn
+  frontend_target_group_arn   = module.load_balancer.frontend_target_group_arn
   container_image             = module.ecr.ecr_repo_urls["frontend_ecr"]
   desired_count               = 2
   subnet_ids                  = module.mainvpc.public_subnets_id
@@ -89,9 +89,9 @@ module "frontend_ecs" {
 }
 
 module "middle_ecs" {
-  source                      = "./module/ecs"
+  source                      = "./module/ecs/middle"
   ecr_repo_urls               = module.ecr.ecr_repo_urls["middle_ecr"]
-  target_group_arn            = module.load_balancer.middle_target_group_arn
+  middle_target_group_arn     = module.load_balancer.middle_target_group_arn
   container_image             = module.ecr.ecr_repo_urls["middle_ecr"]
   desired_count               = 2
   subnet_ids                  = module.mainvpc.private_subnets_id
@@ -99,18 +99,17 @@ module "middle_ecs" {
   ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
   ecs_task_role_arn           = module.iam.ecs_task_role_arn
 
-  depends_on = [module.frontend_ecs]
 }
 
 module "backend_ecs" {
-  source                      = "./module/ecs"
+  source                      = "./module/ecs/backend"
   ecr_repo_urls               = module.ecr.ecr_repo_urls["backend_ecr"]
-  target_group_arn            = module.load_balancer.backend_target_group_arn
+  backend_target_group_arn    = module.load_balancer.backend_target_group_arn
   container_image             = module.ecr.ecr_repo_urls["backend_ecr"]
   desired_count               = 1
   subnet_ids                  = module.mainvpc.private_subnets_id
   security_group_id           = module.security_group.backend_security_group_id # Backend Security Group
   ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
   ecs_task_role_arn           = module.iam.ecs_task_role_arn
-  depends_on = [module.middle_ecs]
+
 }
