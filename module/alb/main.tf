@@ -113,9 +113,28 @@ resource "aws_lb_target_group" "asg_tg" {
     timeout             = var.health_check_timeout
     healthy_threshold   = var.healthy_threshold
     unhealthy_threshold = var.unhealthy_threshold
+    matcher             = "200-299" 
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
+# create a listener for asg
+
+resource "aws_lb_listener_rule" "asg_listener" {
+  listener_arn = aws_lb_listener.frontend_listener.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.asg_tg.arn
+  }
+  condition {
+    path_pattern {
+      values = ["/api"]
+    }
+  }
+}
 
 
 # ASG Launch Template
@@ -125,7 +144,7 @@ resource "aws_launch_template" "stock" {
   instance_type = var.instance_type
 
   network_interfaces {
-    associate_public_ip_address = true
+    associate_public_ip_address = false
     security_groups             = var.security_group_id
   }
 
@@ -139,7 +158,7 @@ resource "aws_launch_template" "stock" {
 
 # Auto Scaling Group
 resource "aws_autoscaling_group" "stock_asg" {
-  vpc_zone_identifier  = var.public_subnets_id # Ensure it's a list
+  vpc_zone_identifier  = var.private_subnets_id # Ensure it's a list
   desired_capacity     = var.desired_capacity
   min_size            = var.min_size
   max_size            = var.max_size
