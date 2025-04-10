@@ -15,35 +15,28 @@ docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 \
 docker ps -a | grep sonarqube
  # (Optional) Persist Docker container on reboot
  echo "@reboot root docker start sonarqube" | sudo tee /etc/cron.d/sonarqube_autostart
-# Install Java (OpenJDK 17 - Recommended for Jenkins)
-sudo yum update -y
-sudo yum install -y openjdk-17-jdk
-              java -version
-# Install Jenkins
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-sudo yum update -y
-sudo apt-get install -y jenkins
-# Start and enable Jenkins
-sudo systemctl start jenkins
-sudo systemctl enable jenkins
+# Run Jenkins in Docker
+docker run -d \
+  --name jenkins \
+  -p 8080:8080 \
+  -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  jenkins/jenkins:lts
  # (Optional) Install useful tools
 sudo apt-get install -y 
 sudo usermod -aG docker jenkins  # Allow Jenkins to use Docker
-# Install prerequisites
-sudo yum install -y wget
-# Add Trivy repository (RHEL/CentOS/Amazon Linux)
-sudo tee /etc/yum.repos.d/trivy.repo
-              [trivy]
-              name=Trivy repository
-              baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$releasever/\$basearch/
-              gpgcheck=0
-              enabled=1
-              
-# Install Trivy
-sudo yum install -y trivy
- # Verify installation
+
+# Install dependencies
+sudo yum update -y
+sudo yum install -y wget tar
+
+# Download and install latest Trivy release
+TRIVY_VERSION=$(curl -s https://api.github.com/repos/aquasecurity/trivy/releases/latest | grep tag_name | cut -d '"' -f 4)
+wget https://github.com/aquasecurity/trivy/releases/download/${TRIVY_VERSION}/trivy_${TRIVY_VERSION:1}_Linux-64bit.tar.gz
+
+# Extract and move to /usr/local/bin
+tar zxvf trivy_${TRIVY_VERSION:1}_Linux-64bit.tar.gz
+sudo mv trivy /usr/local/bin/
+
+# Verify installation
 trivy --version
-              # (Optional) Alternative installation method using RPM
-              # wget https://github.com/aquasecurity/trivy/releases/download/v0.49.1/trivy_0.49.1_Linux-64bit.rpm
-              # sudo rpm -ivh trivy_0.49.1_Linux-64bit.rpm

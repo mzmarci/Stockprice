@@ -1,6 +1,8 @@
 locals {
-  ports = [443, 80, 8000, 22, 8080, 9000, 3000, 9092]
+  ports = [443, 80, 8000, 22, 8080, 9000, 3000, 9092, 50000]
 }
+
+# Port 50000 → Jenkins agent communication
 
 resource "aws_security_group" "stock_security_group" {
   name        = "stock_security_group"
@@ -78,7 +80,7 @@ resource "aws_security_group_rule" "web_ingress3" {
   from_port                = 22
   to_port                  = 22
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.lb_security_group.id  # Allow traffic only from LB
+  source_security_group_id = aws_security_group.stock_security_group.id 
 }
 
 resource "aws_security_group_rule" "web_ingress" {

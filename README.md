@@ -33,3 +33,7 @@ Deployment Flow
 Jenkins builds and pushes images.
 Terraform applies ECS infrastructure updates.
 ECS Fargate runs and manages the services.
+
+
+## Deloying security on the application
+made use of sonarqube and trivy

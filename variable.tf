@@ -7,13 +7,13 @@ variable "ec2_ami" {
 variable "ec2_instance_type" {
   description = "this is a variable to manage ec2_instance_type"
   type        = string
-  default     = "t2.micro"
+  default     = "t2.medium"
 }
 
 variable "ec2_key_name" {
   description = "this is a variable to manage ec2_key_name"
   type        = string
-  default     = "test100"
+  default     = "assign1"
 }
 
 variable "vpc_cidr" {
