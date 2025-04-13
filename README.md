@@ -37,3 +37,12 @@ ECS Fargate runs and manages the services.
 
 ## Deloying security on the application
 made use of sonarqube and trivy
+
+installed my jenkins using a docker conatiner, to get the password
+docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+on my jenkins, i installed some pipeline which are
+temurin
+SonarQube Scanner
+OWASP Dependency-Check
+Docker,docker pipeline, docker build
+amazon ecr

@@ -6,6 +6,10 @@ pipeline {
         FRONTEND_REPO = '723855297198.dkr.ecr.eu-west-1.amazonaws.com/frontend_ecr'
         MIDDLE_REPO   = '723855297198.dkr.ecr.eu-west-1.amazonaws.com/middle_ecr'
         BACKEND_REPO  = '723855297198.dkr.ecr.eu-west-1.amazonaws.com/backend_ecr'
+
+        AWS_ACCESS_KEY_ID = credentials ('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials ('AWS_SECRET_ACCESS_KEY')
+        keyfile = credentials ('keyfile')
     }
 
     stages {
