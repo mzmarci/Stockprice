@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/mzmarci/Stockprice.git'
+                git branch: 'main', url: 'https://github.com/mzmarci/Stockprice.git'
             }
         }
 
