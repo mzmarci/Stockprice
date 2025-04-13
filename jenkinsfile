@@ -56,11 +56,28 @@ pipeline {
                 '''
             }
         }
-        
-        post {
-            always {
-                deleteDir()
-            }
+}
+
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            deleteDir()
+        }
+        success {
+            echo 'Pipeline completed successfully ✅'
+        }
+        failure {
+            echo 'Pipeline failed ❌'
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
