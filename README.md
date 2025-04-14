@@ -46,3 +46,14 @@ SonarQube Scanner
 OWASP Dependency-Check
 Docker,docker pipeline, docker build
 amazon ecr
+
+##  configuring jenkins pipeline
+go to tools - click on add sonarqube scanner
+N.B - to integarte sonarqube to jenkins we need the sonarqube tokens which is ususally gotten from sonarqube.
+To get the token, go to sonarqube, click on administration, then click on security, click on users, click on token, click on update token, enetr any name of ur choice then click on generate, a token will be generated.
+
+Go back to jenkins, click on credentials, then insert the sonarqube token.
+
+We need to add quality gate to our jenkins pipeline, to do that go to your sonarqube,, click on administration, click on configuration, click on webhooks [the webhooks tells us if the projct is looking fine and if we can continue with it], click on create, click on jenkins, paste your jenkins url/sonarqube-webhook/
+
+Go back to jenkins, click on system configuration, search for sonarqube, on the sonarqube installation, input any name of ur choice, on the url paste the url of the sonarqube, click on server authentication token, select the token we have created and click on apply and save
