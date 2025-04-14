@@ -4,8 +4,9 @@ sudo amazon-linux-extras install nginx1 -y
 sudo systemctl enable nginx
 sudo systemctl start nginx
 sudo yum install docker -y
-sudo usermod -aG docker ec2-user
 sudo service docker start
+sudo usermod -aG docker ec2-user
+
 # Run SonarQube in Docker container
 docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 \
                 -v sonarqube_data:/opt/sonarqube/data \
@@ -23,13 +24,17 @@ docker run -d \
   -p 50000:50000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v jenkins_home:/var/jenkins_home \
-  -v $(which docker):/usr/bin/docker \
-  -v $(which aws):/usr/bin/aws \
-  -v /home/ec2-user/.aws:/var/jenkins_home/.aws \
   jenkins/jenkins:lts
  # (Optional) Install useful tools
 sudo apt-get install -y 
 sudo usermod -aG docker jenkins  # Allow Jenkins to use Docker
+
+echo "🛠 Installing AWS CLI and Docker CLI inside Jenkins container..."
+docker exec -u root jenkins bash -c "
+  yum install -y awscli docker && \
+  ln -s /usr/bin/docker /usr/local/bin/docker && \
+  ln -s /usr/bin/aws /usr/local/bin/aws
+"
 
 # Install dependencies
 sudo yum update -y
