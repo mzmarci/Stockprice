@@ -7,9 +7,9 @@ pipeline {
         MIDDLE_REPO   = '723855297198.dkr.ecr.eu-west-1.amazonaws.com/middle_ecr'
         BACKEND_REPO  = '723855297198.dkr.ecr.eu-west-1.amazonaws.com/backend_ecr'
 
-        AWS_ACCESS_KEY_ID = credentials ('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials ('AWS_SECRET_ACCESS_KEY')
-        keyfile = credentials ('keyfile')
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        keyfile = credentials('keyfile')
     }
 
     stages {
@@ -21,40 +21,46 @@ pipeline {
 
         stage('Login to ECR') {
             steps {
-                sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 723855297198.dkr.ecr.eu-west-1.amazonaws.com'
+                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin 723855297198.dkr.ecr.eu-west-1.amazonaws.com'
             }
         }
 
         stage('Build and Push Frontend') {
             steps {
-                sh '''
-                    docker build -t frontend_ecr .
-                    docker tag frontend_ecr:latest 723855297198.dkr.ecr.eu-west-1.amazonaws.com/frontend_ecr:latest $FRONTEND_REPO:latest
-                    docker push 723855297198.dkr.ecr.eu-west-1.amazonaws.com/frontend_ecr:latest $FRONTEND_REPO:latest
-                '''
+                dir('frontend') {
+                    sh """
+                        docker build -t frontend_ecr .
+                        docker tag frontend_ecr:latest ${FRONTEND_REPO}:latest
+                        docker push ${FRONTEND_REPO}:latest
+                    """
+                }
             }
         }
 
         stage('Build and Push Middle') {
             steps {
-                sh '''
-                    docker build -t middle_ecr .
-                    docker tag middle_ecr:latest 723855297198.dkr.ecr.eu-west-1.amazonaws.com/middle_ecr:latest $MIDDLE_REPO:latest
-                    docker push 723855297198.dkr.ecr.eu-west-1.amazonaws.com/middle_ecr:latest $MIDDLE_REPO:latest
-                '''
+                dir('cache') {
+                    sh """
+                        docker build -t middle_ecr .
+                        docker tag middle_ecr:latest ${MIDDLE_REPO}:latest
+                        docker push ${MIDDLE_REPO}:latest
+                    """
+                }
             }
         }
 
         stage('Build and Push Backend') {
             steps {
-                sh '''
-                    docker build -t backend_ecr .
-                    docker tag backend_ecr:latest 723855297198.dkr.ecr.eu-west-1.amazonaws.com/backend_ecr:latest $BACKEND_REPO:latest
-                    docker push 723855297198.dkr.ecr.eu-west-1.amazonaws.com/backend_ecr:latest $BACKEND_REPO:latest
-                '''
+                dir('backend') {
+                    sh """
+                        docker build -t backend_ecr .
+                        docker tag backend_ecr:latest ${BACKEND_REPO}:latest
+                        docker push ${BACKEND_REPO}:latest
+                    """
+                }
             }
         }
-}
+    }
 
     post {
         always {
@@ -69,13 +75,3 @@ pipeline {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
