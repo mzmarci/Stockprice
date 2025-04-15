@@ -6,7 +6,7 @@ sudo systemctl start nginx
 # Update and install prerequisites
 sudo yum update -y
 sudo amazon-linux-extras install docker -y
-sudo yum install -y git awscli
+sudo yum install -y  awscli
 # Start and enable Docker
 sudo systemctl enable docker
 sudo systemctl start docker
@@ -34,7 +34,6 @@ docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /var/jenkins_home:/var/jenkins_home \
   -v $(which docker):/usr/bin/docker \
-  -v $(which git):/usr/bin/git \
   -v $(which aws):/usr/bin/aws \
   -v /home/ec2-user/.aws:/var/jenkins_home/.aws \
   jenkins/jenkins:lts
