@@ -3,9 +3,16 @@ sudo yum update -y
 sudo amazon-linux-extras install nginx1 -y 
 sudo systemctl enable nginx
 sudo systemctl start nginx
-sudo yum install docker -y
-sudo service docker start
+# Update and install prerequisites
+sudo yum update -y
+sudo amazon-linux-extras install docker -y
+sudo yum install -y git awscli
+# Start and enable Docker
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo systemctl restart docker  # Optional extra safety
 sudo usermod -aG docker ec2-user
+sudo usermod -aG docker jenkins  # Allow Jenkins to use Docker
 
 # Run SonarQube in Docker container
 docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 \
@@ -17,17 +24,24 @@ docker ps -a | grep sonarqube
  # (Optional) Persist Docker container on reboot
  echo "@reboot root docker start sonarqube" | sudo tee /etc/cron.d/sonarqube_autostart
 # Run Jenkins in Docker
+# Run Jenkins container
 docker run -d \
   --name jenkins \
+  --restart unless-stopped \
   -u root \
   -p 8080:8080 \
   -p 50000:50000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v jenkins_home:/var/jenkins_home \
+  -v /var/jenkins_home:/var/jenkins_home \
+  -v $(which docker):/usr/bin/docker \
+  -v $(which git):/usr/bin/git \
+  -v $(which aws):/usr/bin/aws \
+  -v /home/ec2-user/.aws:/var/jenkins_home/.aws \
   jenkins/jenkins:lts
- # (Optional) Install useful tools
-sudo apt-get install -y 
-sudo usermod -aG docker jenkins  # Allow Jenkins to use Docker
+
+# Verify container
+docker ps | grep jenkins
+
 
 echo "🛠 Installing AWS CLI and Docker CLI inside Jenkins container..."
 docker exec -u root jenkins bash -c "
