@@ -42,12 +42,13 @@ docker run -d \
 docker ps | grep jenkins
 
 
-echo "🛠 Installing AWS CLI and Docker CLI inside Jenkins container..."
+echo ":hammer_and_wrench: Installing AWS CLI and Docker CLI inside Jenkins container..."
 docker exec -u root jenkins bash -c "
   yum install -y awscli docker && \
   ln -s /usr/bin/docker /usr/local/bin/docker && \
   ln -s /usr/bin/aws /usr/local/bin/aws
 "
+
 
 # Install dependencies
 sudo yum update -y

@@ -21,9 +21,7 @@ pipeline {
 
         stage('Login to ECR') {
             steps {
-                sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 723855297198.dkr.ecr.eu-west-1.amazonaws.com $FRONTEND_REPO'
-                sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 723855297198.dkr.ecr.eu-west-1.amazonaws.com $MIDDLE_REPO'
-                sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 723855297198.dkr.ecr.eu-west-1.amazonaws.com $BACKEND_REPO'
+                sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 723855297198.dkr.ecr.eu-west-1.amazonaws.com'
             }
         }
 
