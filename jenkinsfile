@@ -71,7 +71,7 @@ pipeline {
                     withSonarQubeEnv('sonar') {
                         sh  """
                           ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=stockprice \
+                            -Dsonar.projectKey=Stockprice \
                             -Dsonar.projectName=StockPrice \
                             -Dsonar.sources=.
                         """    
