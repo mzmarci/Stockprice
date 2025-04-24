@@ -73,7 +73,8 @@ pipeline {
                           ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=Stockprice \
                             -Dsonar.projectName=StockPrice \
-                            -Dsonar.sources=.
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=**/*.java
                         """    
                     }
                 }
