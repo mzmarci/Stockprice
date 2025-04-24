@@ -3,6 +3,16 @@ sudo yum update -y
 sudo amazon-linux-extras install nginx1 -y 
 sudo systemctl enable nginx
 sudo systemctl start nginx
+
+# Copy frontend files
+mkdir -p /usr/share/nginx/html
+cp /home/ec2-user/Stockprice/frontend/index.html /usr/share/nginx/html/
+cp /home/ec2-user/Stockprice/frontend/header.png /usr/share/nginx/html/
+chmod -R 755 /usr/share/nginx/html
+
+# Restart nginx to reflect changes
+sudo systemctl restart nginx
+
 # Update and install prerequisites
 sudo yum update -y
 sudo amazon-linux-extras install docker -y
@@ -44,10 +54,11 @@ docker ps | grep jenkins
 
 echo ":hammer_and_wrench: Installing AWS CLI and Docker CLI inside Jenkins container..."
 docker exec -u root jenkins bash -c "
-  yum install -y awscli docker && \
-  ln -s /usr/bin/docker /usr/local/bin/docker && \
-  ln -s /usr/bin/aws /usr/local/bin/aws
+  curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && \
+  apt-get update && apt-get install -y unzip && \
+  unzip awscliv2.zip && ./aws/install
 "
+
 
 
 # Install dependencies
