@@ -6,8 +6,8 @@ sudo systemctl start nginx
 
 # Copy frontend files
 mkdir -p /usr/share/nginx/html
-cp /home/ec2-user/Stockprice/frontend/index.html /usr/share/nginx/html/
-cp /home/ec2-user/Stockprice/frontend/header.png /usr/share/nginx/html/
+sudo cp /home/ec2-user/Stockprice/frontend/index.html /usr/share/nginx/html/
+sudo cp /home/ec2-user/Stockprice/frontend/header.png /usr/share/nginx/html/
 chmod -R 755 /usr/share/nginx/html
 
 # Restart nginx to reflect changes

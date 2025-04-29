@@ -1,0 +1,16 @@
+---
+- name: Pull Alertmanager Docker image
+  community.docker.docker_image:
+    name: prom/alertmanager
+    source: pull
+
+- name: Run Alertmanager container
+  community.docker.docker_container:
+    name: alertmanager
+    image: prom/alertmanager
+    state: started
+    restart_policy: always
+    ports:
+      - "9093:9093"
+    env:
+      - ALERTMANAGER_STORAGE_PATH=/data

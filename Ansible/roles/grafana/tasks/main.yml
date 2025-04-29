@@ -1,0 +1,25 @@
+---
+- name: Install Docker
+  amazon.aws.package:
+    name: docker
+    state: present
+
+- name: Start Docker Service
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Pull Grafana Docker image
+  community.docker.docker_image:
+    name: grafana/grafana
+    source: pull
+
+- name: Run Grafana container
+  community.docker.docker_container:
+    name: grafana
+    image: grafana/grafana
+    state: started
+    restart_policy: always
+    ports:
+      - "3000:3000"

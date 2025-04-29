@@ -1,0 +1,25 @@
+---
+- name: Install Docker
+  amazon.aws.package:
+    name: docker
+    state: present
+
+- name: Start Docker Service
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Pull Prometheus Docker image
+  community.docker.docker_image:
+    name: prom/prometheus
+    source: pull
+
+- name: Run Prometheus container
+  community.docker.docker_container:
+    name: prometheus
+    image: prom/prometheus
+    state: started
+    restart_policy: always
+    ports:
+      - "9090:9090"
