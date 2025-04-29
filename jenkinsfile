@@ -97,7 +97,6 @@ pipeline {
                stage ("Run ansible") {
          steps {
             sh '''
-                 cd Stockprice
                  cd Ansible
                  pwd 
                  ls
