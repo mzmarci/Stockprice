@@ -24,6 +24,10 @@ sudo systemctl restart docker  # Optional extra safety
 sudo usermod -aG docker ec2-user
 sudo usermod -aG docker jenkins  # Allow Jenkins to use Docker
 
+# Install Ansible
+sudo amazon-linux-extras install ansible2 -y
+ansible --version
+
 # Run SonarQube in Docker container
 docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 \
                 -v sonarqube_data:/opt/sonarqube/data \

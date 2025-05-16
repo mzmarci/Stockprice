@@ -1,59 +1,97 @@
 # Stockprice
 
-Stock Price Cache Application  [ By Techbleat ]
+Stock Price Cache Application 
 
 ![alt text](./page.png)
 
 
-This project consists of a **FastAPI** service that fetches stock prices from a **Spring Boot** application, which caches the data in **Redis**. The services are orchestrated using **Docker Compose**. Additionally, there is a **web interface** (`index.html`) that allows users to interact with the application through a simple UI.
+Stock Price  Application
+This project is a fully containerized 3-tier stock price lookup system. It leverages FastAPI, Spring Boot, Redis, and a static frontend, deployed using AWS ECS Fargate, Terraform, Jenkins, and Docker. It also features end-to-end monitoring using Prometheus, Grafana, Node Exporter, and Alertmanager, provisioned with Ansible.
 
-## Services Overview
+🔧 Architecture Overview
+🧩 Services
+Frontend (index.html)
+Static web UI served via NGINX on an EC2 instance, where users input a stock ticker and date.
 
-1. **FastAPI** (`stock-api`): This service exposes an API that allows clients to get stock prices by providing a ticker symbol and date. It first checks the cache (Redis) via the Spring Boot application, and if the data is not available, it fetches the data externally (mocked in this case) and stores it in Redis.
-   
-2. **Spring Boot** (`stock-cache`): This service provides caching capabilities, storing and retrieving stock prices in Redis.
+FastAPI (stock-api)
+Handles API requests. It queries the cache (Spring Boot → Redis), and if not found, fetches mocked data and stores it in Redis.
 
-3. **Redis** (`redis`): The cache store where stock prices are stored temporarily.
+Spring Boot (stock-cache)
+Handles caching logic, communicating directly with Redis.
 
-4. **Web Frontend** (`index.html`): A simple web page that allows users to input a stock ticker and date to retrieve stock price information and  see the result.
+Redis
+In-memory database for caching stock price data.
 
-# The project Architecture
-1. Frontend: Deployed using nginx on an Ec2 server
-2. Application Layer:this is deployed using ecs
-3: Backend Layer: this is deployed using
+🏗️ Infrastructure & Deployment
+🔨 Provisioning
+Defined infrastructure as code using Terraform modules:
+VPC, EC2, RDS, Security Groups, Load Balancer, Auto Scaling.
 
-## Methodology
-a: created modules for ec2,vpc,rds,security,load balancer, auto scaling
-b: for each of the layer a dockerfile was created
-Define ECS tasks and services for each containerized component.
-Use ECS Fargate for serverless container management.
-Configure load balancing, service discovery, and networking.
-Deployment Flow
+📦 Containerization
+Each application layer has its own Dockerfile.
+Docker images are pushed to Amazon ECR.
 
-Jenkins builds and pushes images.
-Terraform applies ECS infrastructure updates.
-ECS Fargate runs and manages the services.
+🚀 Orchestration
+ECS Fargate is used for container orchestration.
 
+Configured Task Definitions, Services, Load Balancing, and Networking.
 
-## Deloying security on the application
-made use of sonarqube and trivy
+🔄 CI/CD Pipeline
+Jenkins (Dockerized) builds, pushes images, and triggers Terraform for infrastructure updates.
 
-installed my jenkins using a docker conatiner, to get the password
+🔍 Monitoring & Observability
+Monitoring is provisioned using Ansible and includes:
+
+Prometheus: Pulls metrics from monitored targets.
+
+Grafana: Visualizes metrics from Prometheus.
+
+Node Exporter: Installed on EC2 instances to expose system metrics.
+
+Alertmanager: Sends alerts based on Prometheus rules.
+
+Monitoring stack is defined in Ansible playbooks and auto-deployed to target EC2 instances.
+
+🔐 Security & Code Quality
+Static Code Analysis:
+Integrated SonarQube with Jenkins and configured Quality Gates.
+
+Vulnerability Scanning:
+Used Trivy to scan Docker images for security issues.
+
+⚙️ Jenkins Configuration
+Jenkins is containerized:
+
 docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
-on my jenkins, i installed some pipeline which are
-temurin
+Plugins Installed:
+
+Temurin
 SonarQube Scanner
 OWASP Dependency-Check
-Docker,docker pipeline, docker build
-amazon ecr
+Docker / Docker Pipeline
+Amazon ECR
 
-##  configuring jenkins pipeline
-go to tools - click on add sonarqube scanner
-N.B - to integarte sonarqube to jenkins we need the sonarqube tokens which is ususally gotten from sonarqube.
-To get the token, go to sonarqube, click on administration, then click on security, click on users, click on token, click on update token, enetr any name of ur choice then click on generate, a token will be generated.
+SonarQube Integration:
 
-Go back to jenkins, click on credentials, then insert the sonarqube token.
+Generate token in SonarQube:
+Administration → Security → Users → Generate Token
 
-We need to add quality gate to our jenkins pipeline, to do that go to your sonarqube,, click on administration, click on configuration, click on webhooks [the webhooks tells us if the projct is looking fine and if we can continue with it], click on create, click on jenkins, paste your jenkins url/sonarqube-webhook/
+Add token in Jenkins Credentials.
 
-Go back to jenkins, click on system configuration, search for sonarqube, on the sonarqube installation, input any name of ur choice, on the url paste the url of the sonarqube, click on server authentication token, select the token we have created and click on apply and save
+Configure SonarQube server in Jenkins system configuration.
+
+Add webhook in SonarQube pointing to:
+http://<jenkins-url>/sonarqube-webhook/
+
+🚀 Deployment Flow Summary
+Jenkins builds Docker images.
+
+Images are pushed to ECR.
+
+Terraform applies ECS infrastructure updates.
+
+ECS Fargate deploys containerized services.
+
+Ansible provisions monitoring stack.
+
+SonarQube and Trivy validate quality and security.
