@@ -66,9 +66,13 @@ docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 Plugins Installed:
 
 Temurin
+
 SonarQube Scanner
+
 OWASP Dependency-Check
+
 Docker / Docker Pipeline
+
 Amazon ECR
 
 SonarQube Integration:
