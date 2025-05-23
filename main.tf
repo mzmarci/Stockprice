@@ -3,14 +3,7 @@ module "mainvpc" {
   public_subnet_cidrs    = var.public_subnet_cidrs
   private_subnet_cidrs   = var.private_subnet_cidrs
   vpc_cidr               = var.vpc_cidr
-  vpc_security_group_ids = module.security_group.stock_security_group_id
-  vpc_id                 = module.mainvpc.vpc_id
-  public_subnets_id      = module.mainvpc.public_subnets_id[*]
-  private_subnets_id     = module.mainvpc.private_subnets_id[*]
 
-  tags = {
-    Name = "Create VPC"
-  }
 }
 
 module "security_group" {
